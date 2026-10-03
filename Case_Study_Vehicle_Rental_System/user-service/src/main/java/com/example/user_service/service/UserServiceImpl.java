@@ -1,4 +1,10 @@
+
 package com.example.user_service.service;
+
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.example.user_service.dto.PasswordRequest;
 import com.example.user_service.dto.ProfileUpdateRequest;
@@ -7,10 +13,6 @@ import com.example.user_service.entity.Role;
 import com.example.user_service.entity.User;
 import com.example.user_service.exception.UserNotFoundException;
 import com.example.user_service.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,7 +43,13 @@ public class UserServiceImpl implements UserService {
                 passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
 
-        user.setRole(Role.USER);
+        // Assign role based on email
+        if (request.getEmail().equalsIgnoreCase("admin@gmail.com")) {
+            user.setRole(Role.ADMIN);
+        } else {
+            user.setRole(Role.USER);
+        }
+
         user.setSubscribed(false);
 
         return userRepository.save(user);
